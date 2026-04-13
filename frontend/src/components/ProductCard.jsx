@@ -1,7 +1,10 @@
 import React from 'react';
 import { ShoppingCart, Heart } from 'lucide-react';
+import { useCart } from '../context/CartContext';
 
 export default function ProductCard({ product }) {
+  const { addToCart } = useCart();
+
   return (
     <div className="bg-zinc-900/80 hover:bg-zinc-900 border border-zinc-800 hover:border-red-600/50 rounded-xl overflow-hidden group transition-all duration-300 flex flex-col h-full shadow-lg relative cursor-pointer">
       
@@ -17,7 +20,7 @@ export default function ProductCard({ product }) {
         <Heart size={14} />
       </button>
 
-      {/* Image Section (Portrait like game boxes, but adjusted for mining hardware/art) */}
+      {/* Image Section */}
       <div className="relative aspect-[4/3] overflow-hidden bg-[#0f0f10] p-1">
         <div className="w-full h-full relative rounded-lg overflow-hidden">
           <img 
@@ -49,7 +52,13 @@ export default function ProductCard({ product }) {
               € {product.price.toFixed(2)}
             </span>
           </div>
-          <button className="bg-zinc-800 hover:bg-red-600 text-white p-2.5 rounded-lg transition-colors group/btn relative">
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              addToCart(product);
+            }}
+            className="bg-zinc-800 hover:bg-red-600 text-white p-2.5 rounded-lg transition-colors group/btn relative"
+          >
             <ShoppingCart size={18} className="group-hover/btn:scale-110 transition-transform" />
           </button>
         </div>
