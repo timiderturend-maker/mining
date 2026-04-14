@@ -1,5 +1,5 @@
 import React from 'react';
-import { Twitter, Instagram, Facebook, Youtube } from 'lucide-react';
+import { Twitter, Instagram, Facebook, Youtube, Heart } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -48,6 +48,7 @@ export default function Footer() {
             <h4 className="text-white font-black mb-4 uppercase text-sm tracking-wider">Über Eden</h4>
             <ul className="space-y-3 text-sm">
               <li><a href="#" className="hover:text-red-500 transition-colors">Über uns</a></li>
+              <li><a href="#" className="hover:text-red-500 transition-colors flex items-center gap-1"><Heart size={12} className="text-red-500" fill="currentColor"/> Spenden (Community)</a></li>
               <li><a href="#" className="hover:text-red-500 transition-colors">Rechenzentren</a></li>
               <li><a href="#" className="hover:text-red-500 transition-colors">Karriere</a></li>
               <li><a href="#" className="hover:text-red-500 transition-colors">News & Blog</a></li>

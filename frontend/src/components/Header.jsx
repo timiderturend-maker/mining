@@ -1,5 +1,5 @@
-import React from 'react';
-import { Search, ShoppingCart, User, Heart, Menu, ChevronDown, LogOut, X, Plus, Minus, LayoutDashboard } from 'lucide-react';
+import React, { useState } from 'react';
+import { Search, ShoppingCart, User, Heart, Menu, ChevronDown, LogOut, X, Plus, Minus, LayoutDashboard, Copy, Check } from 'lucide-react';
 import { MOCK_CATEGORIES } from '../mock';
 import { useAuth, api } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -9,7 +9,16 @@ export default function Header() {
   const { user, login, logout, loading } = useAuth();
   const { cart, total, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, clearCart } = useCart();
   const [checkoutLoading, setCheckoutLoading] = React.useState(false);
+  const [isDonateModalOpen, setIsDonateModalOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
   const navigate = useNavigate();
+  const btcAddress = "bc1qedencloudminingcommunitysupport9876";
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(btcAddress);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const handleCheckout = async () => {
     if (!user) {
@@ -62,6 +71,11 @@ export default function Header() {
               <span>DE</span><ChevronDown size={14} />
             </div>
             
+            <button onClick={() => setIsDonateModalOpen(true)} className="hidden md:flex items-center gap-2 text-zinc-300 hover:text-white cursor-pointer transition-colors text-sm font-semibold border border-zinc-800 hover:border-red-500 px-3 py-1.5 rounded-lg group">
+              <Heart size={16} className="text-red-500 group-hover:scale-110 transition-transform" />
+              <span className="group-hover:text-red-500 transition-colors">Spenden</span>
+            </button>
+
             {loading ? (
                <div className="w-6 h-6 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
             ) : user ? (
@@ -177,6 +191,57 @@ export default function Header() {
               >
                 {checkoutLoading ? 'Verarbeite...' : (user ? 'Zur Kasse gehen' : 'Anmelden & Kasse')}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Donate Modal */}
+      {isDonateModalOpen && (
+        <div className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity" onClick={() => setIsDonateModalOpen(false)}>
+          <div 
+            className="bg-[#0f0f10] border border-zinc-800 rounded-2xl max-w-md w-full shadow-2xl overflow-hidden transform transition-transform scale-100"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="p-6 border-b border-zinc-800 flex items-center justify-between bg-zinc-950">
+              <h3 className="text-xl font-black text-white flex items-center gap-3">
+                <Heart className="text-red-500" fill="currentColor" size={24} /> Eden Unterstützen
+              </h3>
+              <button onClick={() => setIsDonateModalOpen(false)} className="text-zinc-500 hover:text-white bg-zinc-900 p-2 rounded-full hover:bg-zinc-800 transition-colors border border-zinc-800">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="p-6 md:p-8 flex flex-col items-center text-center">
+              <p className="text-zinc-400 text-sm mb-6 leading-relaxed">
+                Dir gefällt unsere Plattform? Unterstütze die Entwicklung und Serverkosten mit einer kleinen Bitcoin-Spende. Jeder Satoshi hilft!
+              </p>
+              
+              <div className="bg-white p-3 rounded-xl mb-6 shadow-[0_0_30px_rgba(220,38,38,0.15)]">
+                <img 
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=bitcoin:${btcAddress}&color=0f0f10`} 
+                  alt="Bitcoin QR Code" 
+                  className="w-40 h-40"
+                />
+              </div>
+
+              <div className="w-full">
+                <label className="text-xs text-zinc-500 font-bold uppercase tracking-wider mb-2 block text-left">Bitcoin Adresse (BTC)</label>
+                <div className="flex items-center gap-2 bg-black border border-zinc-800 rounded-lg p-1">
+                  <input 
+                    type="text" 
+                    readOnly 
+                    value={btcAddress} 
+                    className="bg-transparent text-sm text-zinc-300 w-full px-3 outline-none font-mono"
+                  />
+                  <button 
+                    onClick={handleCopy}
+                    className="bg-zinc-800 hover:bg-zinc-700 text-white p-2 rounded-md transition-colors flex-shrink-0"
+                    title="Adresse kopieren"
+                  >
+                    {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
