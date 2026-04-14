@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List
 from datetime import datetime, timezone
 import uuid
 
@@ -15,6 +15,7 @@ class CartItem(BaseModel):
     price: float
     title: str
     image: str
+    type: str = "Unbekannt"
 
 class CartUpdate(BaseModel):
     items: List[CartItem]
@@ -56,16 +57,35 @@ async def checkout(order: OrderCreate, user: dict = Depends(get_current_user)):
         raise HTTPException(status_code=400, detail="Cart is empty")
         
     order_id = f"ord_{uuid.uuid4().hex[:8]}"
+    created_at = datetime.now(timezone.utc)
+    
     order_doc = {
         "order_id": order_id,
         "user_id": user["user_id"],
         "items": [item.dict() for item in order.items],
         "total": order.total,
         "status": "COMPLETED",
-        "created_at": datetime.now(timezone.utc)
+        "created_at": created_at
     }
     
     await db.orders.insert_one(order_doc)
+    
+    # Create contracts/miners for each item purchased
+    for item in order.items:
+        for _ in range(item.quantity):
+            contract_id = f"ctr_{uuid.uuid4().hex[:8]}"
+            await db.contracts.insert_one({
+                "contract_id": contract_id,
+                "user_id": user["user_id"],
+                "order_id": order_id,
+                "product_id": item.product_id,
+                "title": item.title,
+                "type": item.type,
+                "status": "INACTIVE",
+                "mining_started_at": None,
+                "accumulated_btc": 0.0,
+                "created_at": created_at
+            })
     
     # clear cart
     await db.carts.delete_one({"user_id": user["user_id"]})

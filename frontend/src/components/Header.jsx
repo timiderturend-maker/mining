@@ -1,13 +1,15 @@
 import React from 'react';
-import { Search, ShoppingCart, User, Heart, Menu, ChevronDown, LogOut, X, Plus, Minus } from 'lucide-react';
+import { Search, ShoppingCart, User, Heart, Menu, ChevronDown, LogOut, X, Plus, Minus, LayoutDashboard } from 'lucide-react';
 import { MOCK_CATEGORIES } from '../mock';
 import { useAuth, api } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function Header() {
   const { user, login, logout, loading } = useAuth();
   const { cart, total, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, clearCart } = useCart();
   const [checkoutLoading, setCheckoutLoading] = React.useState(false);
+  const navigate = useNavigate();
 
   const handleCheckout = async () => {
     if (!user) {
@@ -22,7 +24,7 @@ export default function Header() {
       if (res.data?.message) {
         clearCart();
         setIsCartOpen(false);
-        alert('Bestellung erfolgreich!');
+        navigate('/dashboard');
       }
     } catch(e) {
       alert('Fehler beim Checkout.');
@@ -39,7 +41,7 @@ export default function Header() {
         </div>
 
         <div className="max-w-[1600px] mx-auto px-4 lg:px-8 py-4 flex items-center justify-between gap-6">
-          <div className="flex-shrink-0 flex items-center gap-2 cursor-pointer">
+          <div onClick={() => navigate('/')} className="flex-shrink-0 flex items-center gap-2 cursor-pointer">
             <div className="w-10 h-10 bg-red-600 rounded flex items-center justify-center">
               <span className="text-white font-black text-xl tracking-tighter">E</span>
             </div>
@@ -72,11 +74,14 @@ export default function Header() {
                   )}
                   <span className="text-sm font-bold hidden md:block max-w-[100px] truncate">{user.name}</span>
                   
-                  <div className="absolute top-full right-0 mt-2 w-48 bg-zinc-900 border border-zinc-800 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all flex flex-col py-2 z-50">
-                    <div className="px-4 py-2 border-b border-zinc-800 mb-2">
+                  <div className="absolute top-full right-0 mt-2 w-56 bg-zinc-900 border border-zinc-800 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all flex flex-col py-2 z-50">
+                    <div className="px-4 py-3 border-b border-zinc-800 mb-2">
                       <p className="text-xs text-zinc-500 truncate">{user.email}</p>
                     </div>
-                    <button onClick={logout} className="flex items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-zinc-800 transition-colors w-full text-left font-bold">
+                    <button onClick={() => navigate('/dashboard')} className="flex items-center gap-3 px-4 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors w-full text-left font-bold">
+                      <LayoutDashboard size={16} className="text-red-500" /> Dashboard & Verträge
+                    </button>
+                    <button onClick={logout} className="flex items-center gap-3 px-4 py-2 mt-1 text-sm text-zinc-400 hover:text-red-500 hover:bg-zinc-800 transition-colors w-full text-left font-bold border-t border-zinc-800/50 pt-2">
                       <LogOut size={16} /> Abmelden
                     </button>
                   </div>

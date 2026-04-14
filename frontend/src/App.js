@@ -3,6 +3,7 @@ import "./App.css";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
 import AuthCallback from "./pages/AuthCallback";
+import Dashboard from "./pages/Dashboard";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 
@@ -16,6 +17,7 @@ function AppRouter() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/dashboard" element={<Dashboard />} />
     </Routes>
   );
 }

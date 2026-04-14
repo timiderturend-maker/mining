@@ -12,6 +12,7 @@ from database import client, db
 # Import the routers
 from auth_router import router as auth_router
 from cart_router import router as cart_router
+from dashboard_router import router as dashboard_router
 
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
@@ -19,6 +20,7 @@ api_router = APIRouter(prefix="/api")
 # Include routers inside the /api prefix router
 api_router.include_router(auth_router)
 api_router.include_router(cart_router)
+api_router.include_router(dashboard_router)
 
 # Include the main router
 app.include_router(api_router)
