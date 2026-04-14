@@ -1,12 +1,17 @@
 import React from 'react';
 import { ShoppingCart, Heart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
+  const navigate = useNavigate();
 
   return (
-    <div className="bg-zinc-900/80 hover:bg-zinc-900 border border-zinc-800 hover:border-red-600/50 rounded-xl overflow-hidden group transition-all duration-300 flex flex-col h-full shadow-lg relative cursor-pointer">
+    <div 
+      onClick={() => navigate(`/product/${product.id}`)}
+      className="bg-zinc-900/80 hover:bg-zinc-900 border border-zinc-800 hover:border-red-600/50 rounded-xl overflow-hidden group transition-all duration-300 flex flex-col h-full shadow-lg relative cursor-pointer"
+    >
       
       {/* Discount Badge */}
       {product.discount > 0 && (
@@ -16,7 +21,10 @@ export default function ProductCard({ product }) {
       )}
 
       {/* Heart Action */}
-      <button className="absolute top-3 right-3 w-8 h-8 bg-black/40 hover:bg-red-600 text-white flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-all z-10 backdrop-blur-sm">
+      <button 
+        onClick={(e) => e.stopPropagation()}
+        className="absolute top-3 right-3 w-8 h-8 bg-black/40 hover:bg-red-600 text-white flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-all z-10 backdrop-blur-sm"
+      >
         <Heart size={14} />
       </button>
 

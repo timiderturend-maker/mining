@@ -13,6 +13,7 @@ from database import client, db
 from auth_router import router as auth_router
 from cart_router import router as cart_router
 from dashboard_router import router as dashboard_router
+from products_router import router as products_router
 
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
@@ -21,6 +22,7 @@ api_router = APIRouter(prefix="/api")
 api_router.include_router(auth_router)
 api_router.include_router(cart_router)
 api_router.include_router(dashboard_router)
+api_router.include_router(products_router)
 
 # Include the main router
 app.include_router(api_router)
@@ -38,6 +40,17 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+@app.on_event("startup")
+async def startup_event():
+    # Automatically seed products if collection is empty
+    count = await db.products.count_documents({})
+    if count == 0:
+        import sys
+        import os
+        sys.path.append(os.path.dirname(__file__))
+        import seed_products
+        await seed_products.seed_db()
 
 @app.on_event("shutdown")
 async def shutdown_db_client():

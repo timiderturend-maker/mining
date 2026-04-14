@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, ShoppingCart, User, Heart, Menu, ChevronDown, LogOut, X, Plus, Minus, LayoutDashboard, Copy, Check } from 'lucide-react';
 import { MOCK_CATEGORIES } from '../mock';
 import { useAuth, api } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
 
-export default function Header() {
+export default function Header({ selectedCategory, setSelectedCategory }) {
   const { user, login, logout, loading } = useAuth();
   const { cart, total, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, clearCart } = useCart();
   const [checkoutLoading, setCheckoutLoading] = React.useState(false);
@@ -39,6 +39,18 @@ export default function Header() {
       alert('Fehler beim Checkout.');
     } finally {
       setCheckoutLoading(false);
+    }
+  };
+
+  const handleCategoryClick = (cat) => {
+    if (setSelectedCategory) {
+      setSelectedCategory(cat);
+      // Navigate to home if we are not already there
+      if (window.location.pathname !== '/') {
+        navigate('/', { state: { category: cat } });
+      }
+    } else {
+       navigate('/', { state: { category: cat } });
     }
   };
 
@@ -124,7 +136,13 @@ export default function Header() {
                 Kategorien
               </li>
               {MOCK_CATEGORIES.map((cat, idx) => (
-                <li key={idx} className="text-zinc-400 hover:text-white font-semibold py-2 px-2 cursor-pointer text-sm whitespace-nowrap transition-colors">{cat}</li>
+                <li 
+                  key={idx} 
+                  onClick={() => handleCategoryClick(cat)}
+                  className={`font-semibold py-2 px-2 cursor-pointer text-sm whitespace-nowrap transition-colors ${selectedCategory === cat ? 'text-red-500' : 'text-zinc-400 hover:text-white'}`}
+                >
+                  {cat}
+                </li>
               ))}
             </ul>
           </div>
